@@ -3,7 +3,13 @@
   "builds": [
     {
       "src": "api/index.go",
-      "use": "@vercel/go"
+      "use": "@vercel/go",
+      "config": {
+        "includeFiles": [
+          "data/projects.json",
+          "static/index.html"
+        ]
+      }
     },
     {
       "src": "static/**",
@@ -16,12 +22,20 @@
   ],
   "routes": [
     {
+      "src": "/api/projects",
+      "dest": "/api/index.go"
+    },
+    {
       "src": "/data/(.*)",
       "dest": "/data/$1"
     },
     {
       "src": "/image/(.*)",
       "dest": "/static/image/$1"
+    },
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
     },
     {
       "src": "/(.*)",

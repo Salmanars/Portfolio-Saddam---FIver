@@ -1,34 +1,44 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"os"
 	"path/filepath"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	// Menangani routing untuk static files dan API
-	path := r.URL.Path
-
-	// Jika route diawali /data/, layankan dari folder data
-	if len(path) >= 6 && path[:6] == "/data/" {
-		http.ServeFile(w, r, filepath.Join(".", path))
+	if r.URL.Path == "/api/projects" {
+		serveProjects(w, r)
 		return
 	}
 
-	// Jika route diawali /image/ atau /static/, layankan dari folder static
-	if (len(path) >= 7 && path[:7] == "/image/") || (len(path) >= 8 && path[:8] == "/static/") {
-		http.ServeFile(w, r, filepath.Join("./static", path))
+	indexPath := filepath.Join("static", "index.html")
+	if _, err := os.Stat(indexPath); err != nil {
+		http.Error(w, "Portfolio page is unavailable", http.StatusInternalServerError)
 		return
 	}
 
-	// Default: Layankan static/index.html atau static file di dalamnya
-	filePath := filepath.Join("./static", path)
-	if info, err := os.Stat(filePath); err == nil && !info.IsDir() {
-		http.ServeFile(w, r, filePath)
+	http.ServeFile(w, r, indexPath)
+}
+
+func serveProjects(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Fallback ke index.html
-	http.ServeFile(w, r, "./static/index.html")
+	data, err := os.ReadFile(filepath.Join("data", "projects.json"))
+	if err != nil {
+		http.Error(w, "Portfolio data is unavailable", http.StatusInternalServerError)
+		return
+	}
+	if !json.Valid(data) {
+		http.Error(w, "Portfolio data is invalid", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	_, _ = w.Write(data)
 }
