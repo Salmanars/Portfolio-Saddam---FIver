@@ -10,7 +10,7 @@ import (
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/projects", projectsHandler)
-	mux.Handle("/", http.FileServer(http.Dir("static")))
+	mux.Handle("/", http.FileServer(http.Dir(".")))
 
 	address := ":8080"
 	log.Printf("Portfolio server listening on http://localhost%s", address)

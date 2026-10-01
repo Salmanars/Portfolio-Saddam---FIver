@@ -268,7 +268,7 @@ projectTabs.forEach((tab) => {
 
 async function loadPortfolio() {
   try {
-    const response = await fetch("/api/projects");
+    const response = await fetch("/data/projects.json");
     if (!response.ok) throw new Error(`API merespons ${response.status}`);
     const data = await response.json();
 
