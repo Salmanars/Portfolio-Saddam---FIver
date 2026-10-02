@@ -8,6 +8,45 @@ const projectList = document.querySelector("#project-list");
 const projectTabs = [...document.querySelectorAll(".project-tab")];
 let projects = [];
 
+const deck = document.querySelector("#horizontal-deck");
+const slides = [...(deck?.querySelectorAll(":scope > section, :scope > footer") || [])];
+
+function goToSlide(slide) {
+  if (!deck || !slide) return;
+  deck.scrollTo({ left: slide.offsetLeft, behavior: "smooth" });
+}
+
+document.querySelector("#slide-previous")?.addEventListener("click", () => {
+  deck?.scrollBy({ left: -deck.clientWidth, behavior: "smooth" });
+});
+
+document.querySelector("#slide-next")?.addEventListener("click", () => {
+  deck?.scrollBy({ left: deck.clientWidth, behavior: "smooth" });
+});
+
+document.querySelectorAll('a[href^="#"]').forEach((link) => {
+  link.addEventListener("click", (event) => {
+    const target = document.querySelector(link.getAttribute("href"));
+    if (!target || !deck?.contains(target)) return;
+    event.preventDefault();
+    goToSlide(target);
+  });
+});
+
+document.addEventListener("keydown", (event) => {
+  if (!deck || certificateLightbox?.open || event.altKey || event.ctrlKey || event.metaKey) return;
+  if (event.target.closest?.("input, textarea, select, [contenteditable='true']")) return;
+
+  const currentIndex = Math.round(deck.scrollLeft / deck.clientWidth);
+  if (event.key === "ArrowLeft" && currentIndex > 0) {
+    event.preventDefault();
+    goToSlide(slides[currentIndex - 1]);
+  } else if (event.key === "ArrowRight" && currentIndex < slides.length - 1) {
+    event.preventDefault();
+    goToSlide(slides[currentIndex + 1]);
+  }
+});
+
 function setText(selector, value) {
   const element = document.querySelector(selector);
   if (element && value) element.textContent = value;

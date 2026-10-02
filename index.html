@@ -24,7 +24,7 @@
     <a class="header-contact" href="mailto:saddamsandytia@gmail.com">Hubungi saya <span aria-hidden="true">↗</span></a>
   </header>
 
-  <main>
+  <main class="horizontal-deck" id="horizontal-deck" aria-label="Slide portofolio">
     <section class="hero" id="home" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="eyebrow"><span class="status-dot"></span> PERSONAL PORTFOLIO <span class="eyebrow-year">2024 — SEKARANG</span></p>
@@ -90,14 +90,6 @@
       </div>
     </section>
 
-    <dialog class="certificate-lightbox" id="certificate-lightbox" aria-labelledby="lightbox-title">
-      <div class="lightbox-toolbar">
-        <p id="lightbox-title">Pratinjau gambar</p>
-        <button class="lightbox-close" id="lightbox-close" type="button" aria-label="Tutup pratinjau">&times;</button>
-      </div>
-      <img class="lightbox-image" id="lightbox-image" alt="Pratinjau gambar">
-    </dialog>
-
     <section class="experience-section section-shell" id="experience">
       <div class="experience-heading">
         <div>
@@ -117,15 +109,28 @@
         <p class="loading-note">Memuat daftar proyek...</p>
       </div>
     </section>
-  </main>
 
-  <footer class="site-footer">
+    <footer class="site-footer" id="contact-slide">
     <div class="footer-top">
       <a class="footer-name" href="#home">Saddam Saktya<br>Sandytia<span>.</span></a>
       <div class="footer-contact"><span>TERBUKA UNTUK KONEKSI PROFESIONAL</span><a href="mailto:saddamsandytia@gmail.com" id="footer-email">saddamsandytia@gmail.com ↗</a></div>
       <a class="back-top" href="#home" aria-label="Kembali ke atas">↑</a>
     </div>
     <div class="footer-bottom"><span>© <span id="current-year">2024</span> Saddam Saktya Sandytia</span><span>DIRANCANG DENGAN KETELITIAN</span><a href="https://linkedin.com/in/saddamsandytia/" id="footer-linkedin" target="_blank" rel="noreferrer">LINKEDIN ↗</a></div>
-  </footer>
+    </footer>
+  </main>
+
+  <dialog class="certificate-lightbox" id="certificate-lightbox" aria-labelledby="lightbox-title">
+    <div class="lightbox-toolbar">
+      <p id="lightbox-title">Pratinjau gambar</p>
+      <button class="lightbox-close" id="lightbox-close" type="button" aria-label="Tutup pratinjau">&times;</button>
+    </div>
+    <img class="lightbox-image" id="lightbox-image" alt="Pratinjau gambar">
+  </dialog>
+
+  <div class="slide-controls" aria-label="Navigasi slide">
+    <button class="slide-arrow" id="slide-previous" type="button" aria-label="Slide sebelumnya" title="Slide sebelumnya">&lt;</button>
+    <button class="slide-arrow" id="slide-next" type="button" aria-label="Slide berikutnya" title="Slide berikutnya">&gt;</button>
+  </div>
 </body>
 </html>
