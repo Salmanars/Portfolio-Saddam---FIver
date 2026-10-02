@@ -1,15 +1,20 @@
 const skillGroups = [
-  { key: "technical", title: "Technical" },
-  { key: "software", title: "Software" },
-  { key: "soft", title: "Soft Skills" }
+  { key: "technical", title: "Civil Engineering", className: "skill-group-technical" },
+  { key: "software", title: "Software & Digital Tools", className: "skill-group-software" },
+  { key: "soft", title: "Professional Skills", className: "skill-group-soft" }
 ];
-
-const projectList = document.querySelector("#project-list");
-const projectTabs = [...document.querySelectorAll(".project-tab")];
-let projects = [];
 
 const deck = document.querySelector("#horizontal-deck");
 const slides = [...(deck?.querySelectorAll(":scope > section, :scope > footer") || [])];
+const projectImageObserver = deck && "IntersectionObserver" in window
+  ? new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.loading = "eager";
+      observer.unobserve(entry.target);
+    });
+  }, { root: deck, rootMargin: "80px" })
+  : null;
 
 function goToSlide(slide) {
   if (!deck || !slide) return;
@@ -58,27 +63,36 @@ function renderContact(contact) {
   const email = document.querySelector("#hero-email");
   const phone = document.querySelector("#hero-phone");
   const linkedin = document.querySelector("#hero-linkedin");
-  const footerEmail = document.querySelector("#footer-email");
-  const footerLinkedin = document.querySelector("#footer-linkedin");
+  const whatsappCard = document.querySelector("#contact-whatsapp");
+  const whatsappDetail = document.querySelector("#contact-phone-detail");
+  const emailCard = document.querySelector("#contact-email");
+  const emailDetail = document.querySelector("#contact-email-detail");
+  const linkedinCard = document.querySelector("#contact-linkedin");
+
+  const linkedinUrl = contact.linkedin
+    ? `https://${contact.linkedin.replace(/^https?:\/\//, "")}`
+    : "https://linkedin.com/in/saddamsandytia/";
 
   if (email) {
     email.textContent = contact.email;
     email.href = `mailto:${contact.email}`;
   }
-  if (footerEmail) {
-    footerEmail.textContent = `${contact.email} ↗`;
-    footerEmail.href = `mailto:${contact.email}`;
+  if (emailCard && contact.email) emailCard.href = `mailto:${contact.email}`;
+  if (emailDetail && contact.email) emailDetail.textContent = contact.email;
+  if (whatsappCard && contact.phone) {
+    whatsappCard.href = `https://wa.me/${contact.phone.replace(/\D/g, "")}`;
+  }
+  if (whatsappDetail && contact.phone) {
+    whatsappDetail.textContent = contact.phone;
   }
   if (phone) {
     phone.textContent = contact.phone;
     phone.href = `tel:${contact.phone.replace(/[\s()-]/g, "")}`;
   }
   if (linkedin) {
-    linkedin.href = `https://${contact.linkedin.replace(/^https?:\/\//, "")}`;
+    linkedin.href = linkedinUrl;
   }
-  if (footerLinkedin) {
-    footerLinkedin.href = `https://${contact.linkedin.replace(/^https?:\/\//, "")}`;
-  }
+  if (linkedinCard) linkedinCard.href = linkedinUrl;
 }
 
 function renderAvatar(avatar) {
@@ -163,6 +177,67 @@ function renderCertifications(certifications) {
   });
 }
 
+function renderProjectGallery(containerSelector, projects, role) {
+  const container = document.querySelector(containerSelector);
+  if (!container) return;
+
+  container.replaceChildren();
+  const entries = Array.isArray(projects) ? projects : [];
+  if (entries.length === 0) {
+    const emptyState = document.createElement("p");
+    emptyState.className = "project-gallery-empty";
+    emptyState.textContent = "Belum ada proyek untuk ditampilkan.";
+    container.append(emptyState);
+    return;
+  }
+
+  entries.forEach((project, index) => {
+    if (!project || typeof project !== "object") return;
+
+    const card = document.createElement("article");
+    card.className = "project-gallery-card glass-panel";
+
+    const imageButton = document.createElement("button");
+    imageButton.className = "project-gallery-image";
+    imageButton.type = "button";
+    imageButton.dataset.image = project.image || "";
+    imageButton.dataset.title = project.name || `Proyek ${index + 1}`;
+    imageButton.setAttribute("aria-label", `Lihat gambar proyek: ${imageButton.dataset.title}`);
+
+    if (project.image) {
+      const image = document.createElement("img");
+      image.src = project.image;
+      image.alt = `Foto ${project.name || "proyek konstruksi"}`;
+      image.loading = "lazy";
+      image.addEventListener("error", () => imageButton.classList.add("image-unavailable"), { once: true });
+      imageButton.append(image);
+      if (projectImageObserver) projectImageObserver.observe(image);
+      else image.loading = "eager";
+    } else {
+      imageButton.classList.add("image-unavailable");
+    }
+
+    const cardContent = document.createElement("div");
+    cardContent.className = "project-gallery-content";
+    const title = document.createElement("h3");
+    title.textContent = project.name || `Proyek ${index + 1}`;
+
+    const badges = document.createElement("div");
+    badges.className = "project-gallery-badges";
+    const location = document.createElement("span");
+    location.className = "project-location-badge";
+    location.textContent = project.location || "Lokasi tidak dicantumkan";
+    const roleBadge = document.createElement("span");
+    roleBadge.className = "project-role-badge";
+    roleBadge.textContent = role;
+
+    badges.append(location, roleBadge);
+    cardContent.append(title, badges);
+    card.append(imageButton, cardContent);
+    container.append(card);
+  });
+}
+
 const certificateLightbox = document.querySelector("#certificate-lightbox");
 const lightboxImage = document.querySelector("#lightbox-image");
 const lightboxTitle = document.querySelector("#lightbox-title");
@@ -172,6 +247,12 @@ document.querySelector("#certification-list")?.addEventListener("click", (event)
   if (!preview || !certificateLightbox || !lightboxImage || typeof certificateLightbox.showModal !== "function") return;
 
   openImagePreview(preview.dataset.image, preview.dataset.title, "sertifikat");
+});
+
+deck?.addEventListener("click", (event) => {
+  const preview = event.target.closest(".project-gallery-image");
+  if (!preview?.dataset.image) return;
+  openImagePreview(preview.dataset.image, preview.dataset.title, "proyek");
 });
 
 function openImagePreview(image, title, type) {
@@ -207,7 +288,7 @@ function renderSkills(skills) {
     if (!Array.isArray(items)) continue;
 
     const section = document.createElement("section");
-    section.className = "skill-group";
+    section.className = `skill-group ${group.className}`;
     const heading = document.createElement("h3");
     heading.textContent = group.title;
     const list = document.createElement("ul");
@@ -223,91 +304,9 @@ function renderSkills(skills) {
   }
 }
 
-function renderProjects(role) {
-  const matchingProjects = projects.filter((project) => project.role === role);
-  projectList.replaceChildren();
-  projectList.setAttribute("aria-labelledby", role === "Site Engineer" ? "tab-site" : "tab-quality");
-  setText("#project-count", `${String(matchingProjects.length).padStart(2, "0")} PROYEK`);
-
-  matchingProjects.forEach((project, index) => {
-    const card = document.createElement("article");
-    card.className = "project-card";
-
-    const number = document.createElement("span");
-    number.className = "project-number";
-    number.textContent = String(index + 1).padStart(2, "0");
-
-    const details = document.createElement("div");
-    details.className = "project-details";
-    const title = document.createElement("h3");
-    title.textContent = project.name;
-    const location = document.createElement("p");
-    location.textContent = project.location;
-    details.append(title, location);
-
-    const arrow = document.createElement("span");
-    arrow.className = "project-arrow";
-    arrow.setAttribute("aria-hidden", "true");
-    arrow.textContent = "↗";
-
-    if (typeof project.image === "string" && project.image) {
-      card.tabIndex = 0;
-      card.setAttribute("aria-label", `Lihat foto proyek: ${project.name}`);
-
-      const preview = document.createElement("button");
-      preview.className = "project-image-preview";
-      preview.type = "button";
-      preview.dataset.image = project.image;
-      preview.dataset.title = project.name;
-      preview.setAttribute("aria-label", `Lihat foto proyek: ${project.name}`);
-
-      const image = document.createElement("img");
-      image.src = project.image;
-      image.alt = `Foto proyek ${project.name}`;
-      image.loading = "lazy";
-      image.addEventListener("error", () => preview.classList.add("image-unavailable"), { once: true });
-      preview.append(image);
-      card.append(preview);
-    }
-
-    card.append(number, details, arrow);
-    projectList.append(card);
-  });
-}
-
-projectList.addEventListener("click", (event) => {
-  const card = event.target.closest(".project-card");
-  if (!card) return;
-
-  const preview = event.target.closest(".project-image-preview") || card.querySelector(".project-image-preview");
-  if (!preview) return;
-  openImagePreview(preview.dataset.image, preview.dataset.title, "foto proyek");
-});
-
-projectList.addEventListener("keydown", (event) => {
-  const card = event.target.closest(".project-card");
-  if (event.target !== card || !card?.querySelector(".project-image-preview")) return;
-  if (event.key !== "Enter" && event.key !== " ") return;
-
-  event.preventDefault();
-  const preview = card.querySelector(".project-image-preview");
-  openImagePreview(preview.dataset.image, preview.dataset.title, "foto proyek");
-});
-
-projectTabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    projectTabs.forEach((item) => {
-      const isSelected = item === tab;
-      item.classList.toggle("is-active", isSelected);
-      item.setAttribute("aria-selected", String(isSelected));
-    });
-    renderProjects(tab.dataset.role);
-  });
-});
-
 async function loadPortfolio() {
   try {
-    const response = await fetch("/data/projects.json");
+    const response = await fetch("/data/projects.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`API merespons ${response.status}`);
     const data = await response.json();
 
@@ -316,15 +315,8 @@ async function loadPortfolio() {
     renderContact(data.profile?.contact);
     renderSkills(data.skills);
     renderCertifications(data.certifications);
-    const projectEntries = Array.isArray(data.projects) ? data.projects : [];
-    const qualityControlProjects = Array.isArray(data.quality_control_projects)
-      ? data.quality_control_projects
-      : projectEntries.filter((project) => project.role === "Quality Control");
-    projects = [
-      ...projectEntries.filter((project) => project.role !== "Quality Control"),
-      ...qualityControlProjects.map((project) => ({ ...project, role: "Quality Control" }))
-    ];
-    renderProjects(document.querySelector(".project-tab.is-active")?.dataset.role || "Site Engineer");
+    renderProjectGallery("#site-project-list", data.projects, "Site Engineer");
+    renderProjectGallery("#quality-project-list", data.quality_control_projects, "Quality Control");
   } catch (error) {
     console.error("Gagal memuat data portofolio:", error);
     document.querySelectorAll(".loading-note").forEach((element) => {

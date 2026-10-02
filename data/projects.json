@@ -12,18 +12,20 @@
   },
   "skills": {
     "technical": [
-      "Administration",
+      "Quality Control",
       "Site Inspection",
+      "BOQ & Costing",
       "Complaint Handling",
-      "SOP Compliance Verification"
+      "SOP Compliance Verification",
+      "Administration"
     ],
     "software": [
       "Microsoft Office",
       "Google Workspace",
       "AutoCAD",
+      "Canva",
       "Planswift",
-      "Figma",
-      "Canva"
+      "Figma"
     ],
     "soft": [
       "Effective Communication",
@@ -74,7 +76,7 @@
     },
     {
       "role": "Site Engineer",
-      "name": "Apartmen SkyHouse Alam Sutera Phase 3+ Project",
+      "name": "Apartmen SkyHouse Alam Sutera Phase3+ Project",
       "location": "Tangerang Selatan, Banten",
       "image": "/image/Project SiteEngineer 2.png"
     },
