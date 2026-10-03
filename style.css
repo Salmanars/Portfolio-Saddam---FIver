@@ -303,6 +303,7 @@ body { background: var(--paper); color: var(--ink); font-family: var(--font-body
 .slide-aside { margin: 0 0 3px; color: #64748B; font-size: 9px; line-height: 1.8; text-align: right; }
 .glass-panel { border: 1px solid rgba(255,255,255,.88); background: rgba(255,255,255,.62); box-shadow: 0 14px 34px rgba(30,41,59,.07); backdrop-filter: blur(12px); }
 .about-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 22px; min-height: 390px; }
+.about-panel h3 { max-width: 420px; font-size: clamp(1.2rem, 1.8vw, 1.7rem); line-height: 1.25; }
 .about-panel { display: flex; flex-direction: column; padding: 30px; }
 .panel-label { margin: 0 0 14px; color: #9A6C00; font-size: 9px; }
 .about-panel h3 { max-width: 400px; margin: 0; color: var(--navy); font-size: 24px; font-weight: 800; line-height: 1.2; }
